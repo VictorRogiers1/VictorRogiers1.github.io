@@ -5,28 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>🎁 Tài Liệu Độc Quyền | Marketing 2026</title>
     
-    <!-- Facebook App Links Meta Tags -->
-    <meta property="al:android:url" content="shopee://">
-    <meta property="al:android:package" content="com.shopee.vn">
-    <meta property="al:android:app_name" content="Shopee">
-    <meta property="al:ios:url" content="shopee://">
-    <meta property="al:ios:app_store_id" content="959840327">
-    <meta property="al:ios:app_name" content="Shopee">
-    <meta property="al:web:should_fallback" content="false">
+    <!-- Thư viện eiab giúp phát hiện và "thoát" khỏi trình duyệt in-app -->
+    <script type="importmap">
+      {
+        "imports": {
+          "eiab": "https://esm.sh/eiab@0.1.2"
+        }
+      }
+    </script>
     
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { cursor: pointer !important; }
         .hover-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); transition: all 0.3s ease; }
         .btn-hover:hover { background-color: #2563eb !important; }
-        .btn-shopee { background-color: #ee4d2d; color: white; transition: all 0.3s; }
-        .btn-shopee:hover { background-color: #d43f1f; transform: scale(1.02); }
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased">
 
-    <script>
+    <script type="module">
         // ########################################
         // ####### CẤU HÌNH LINK CỦA BẠN #########
         // ########################################
@@ -34,22 +34,34 @@
         const YOUR_SHOPEE_AFFILIATE_URL = "https://shopee.vn/flash_sale?deep_and_deferred=1&utm_source=landingpage&utm_medium=clickanywhere";
         // ########################################
 
-        function openShopee() {
-            // Sử dụng window.location để mở Universal Link.
-            // Trên điện thoại, thao tác này sẽ ưu tiên mở App Shopee.
-            window.location.href = YOUR_SHOPEE_AFFILIATE_URL;
-        }
+        import { attemptEscape, isInAppBrowser } from 'eiab';
 
-        // Gắn sự kiện click cho toàn bộ body
         (function() {
+            // Hàm xử lý Click Anywhere + Mở App Shopee
+            function handleClick(event) {
+                // 1. Kiểm tra xem có đang ở trong Facebook WebView không
+                if (isInAppBrowser()) {
+                    console.log('[Facebook WebView] Phát hiện trình duyệt in-app, đang kích hoạt escape...');
+                    // 2. Dùng eiab để tạo URL thoát ra trình duyệt gốc (Chrome/Safari)
+                    //    Thư viện sẽ tự động xử lý việc chuyển hướng cho cả iOS và Android.
+                    attemptEscape(YOUR_SHOPEE_AFFILIATE_URL);
+                    return; // Dừng lại, không làm gì thêm
+                }
+
+                // 3. Nếu không phải Facebook WebView (đang ở Chrome/Safari), mở link bình thường
+                console.log('[Normal Browser] Đang mở link...');
+                window.location.href = YOUR_SHOPEE_AFFILIATE_URL;
+            }
+
+            // Gắn sự kiện click vào body
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', function() {
-                    document.body.addEventListener('click', openShopee);
+                    document.body.addEventListener('click', handleClick);
                 });
             } else {
-                document.body.addEventListener('click', openShopee);
+                document.body.addEventListener('click', handleClick);
             }
-            
+
             document.body.style.cursor = 'pointer';
             document.body.style.userSelect = 'none';
             document.body.style.webkitUserSelect = 'none';
@@ -91,17 +103,17 @@
                     <i class="fas fa-check-circle text-green-500 mr-2"></i> Chiến lược Affiliate Shopee 0đ vốn
                 </p>
                 
-                <!-- NÚT CHÍNH: MỞ APP SHOPEE -->
+                <!-- NÚT GIẢ (Cũng sẽ mở link Affiliate khi click) -->
                 <div class="flex flex-wrap gap-4">
-                    <button onclick="openShopee()" class="btn-shopee font-bold py-4 px-8 rounded-xl shadow-lg shadow-orange-200 text-lg transition-all">
-                        <i class="fab fa-shopee mr-2"></i> Mở App Shopee Nhận Voucher
-                    </button>
-                    <button onclick="openShopee()" class="bg-white border-2 border-gray-300 text-gray-700 font-bold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all text-lg">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-200 text-lg transition-all transform hover:scale-105">
                         <i class="fas fa-download mr-2"></i> Nhận Tài Liệu Ngay
+                    </button>
+                    <button class="bg-white border-2 border-gray-300 text-gray-700 font-bold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all text-lg">
+                        <i class="fab fa-shopee mr-2 text-orange-500"></i> Xem Deal Shopee
                     </button>
                 </div>
                 <p class="text-xs text-gray-400 mt-4">
-                    *Click vào nút để mở ứng dụng Shopee và nhận ưu đãi độc quyền.
+                    *Click vào bất kỳ đâu trên màn hình để xem ưu đãi độc quyền.
                 </p>
             </div>
             <div class="relative">
