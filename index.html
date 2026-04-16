@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <!-- Thẻ Meta này dành riêng cho iOS để hiển thị Banner Mở App tự nhiên -->
+    <meta name="apple-itunes-app" content="app-id=959840327">
     <title>🎁 Tài Liệu Độc Quyền | Marketing 2026</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { cursor: pointer !important; }
@@ -25,77 +25,89 @@
         // ########################################
 
 
-        // Hàm chuyển đổi link affiliate thành Universal Link của Shopee
-        function getShopeeUniversalLink(affiliateUrl) {
-            try {
-                // Lấy domain của link affiliate (ví dụ: shopee.vn)
-                const url = new URL(affiliateUrl);
-                const domain = url.hostname;
-                const path = url.pathname + url.search + url.hash;
-                
-                // Tạo Universal Link theo định dạng: https://shopee.vn/universal-link/[path]
-                // Đây là cách làm chuẩn để mở app Shopee trực tiếp
-                return `https://${domain}/universal-link${path}`;
-            } catch (e) {
-                console.error("Lỗi khi tạo universal link:", e);
-                return affiliateUrl; // Fallback về link gốc
-            }
-        }
-
-        // Hàm xử lý Click Anywhere + Mở App Shopee
         (function() {
-            const SHOPEE_UNIVERSAL_LINK = getShopeeUniversalLink(YOUR_SHOPEE_AFFILIATE_URL);
-            const FALLBACK_URL = YOUR_SHOPEE_AFFILIATE_URL;
-
-            // Hàm kiểm tra xem có phải thiết bị di động không
-            function isMobileDevice() {
-                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            // Hàm trích xuất path từ link affiliate để tạo Intent
+            function getPathFromUrl(urlString) {
+                try {
+                    const url = new URL(urlString);
+                    return url.pathname + url.search + url.hash;
+                } catch (e) {
+                    return "/";
+                }
             }
 
-            // Hàm chính mở link (ưu tiên mở App trên mobile)
             function handleClick(event) {
-                // Nếu là PC / Máy tính: Mở link trong tab mới như bình thường
-                if (!isMobileDevice()) {
-                    window.open(FALLBACK_URL, '_blank');
-                    console.log(`[Desktop] Đã mở link web: ${FALLBACK_URL}`);
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                
+                // Nếu là PC: Mở tab mới bình thường
+                if (!isMobile) {
+                    window.open(YOUR_SHOPEE_AFFILIATE_URL, '_blank');
                     return;
                 }
 
-                // Logic cho thiết bị di động: Thử mở App Shopee
-                console.log(`[Mobile] Đang thử mở Shopee App...`);
+                // -------------------------------------------------
+                // 1. XỬ LÝ CHO ANDROID (Intent URL - mở thẳng không hỏi)
+                // -------------------------------------------------
+                if (/Android/i.test(navigator.userAgent)) {
+                    // Cấu trúc Intent URL của Shopee Android
+                    // Package name: com.shopee.vn
+                    const path = getPathFromUrl(YOUR_SHOPEE_AFFILIATE_URL);
+                    const intentUrl = `intent://shopee.vn${path}#Intent;scheme=https;package=com.shopee.vn;S.browser_fallback_url=${encodeURIComponent(YOUR_SHOPEE_AFFILIATE_URL)};end`;
+                    
+                    // Tạo một thẻ a ảo và click nó (cách này bypass được popup blocker)
+                    const link = document.createElement('a');
+                    link.href = intentUrl;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    console.log('[Android] Đã kích hoạt Intent URL, mở thẳng Shopee App');
+                    return;
+                }
 
-                // Ghi nhận thời gian bắt đầu
-                const startTime = Date.now();
+                // -------------------------------------------------
+                // 2. XỬ LÝ CHO iOS (Universal Link vẫn là tốt nhất)
+                // -------------------------------------------------
+                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    const path = getPathFromUrl(YOUR_SHOPEE_AFFILIATE_URL);
+                    const universalLink = `https://shopee.vn/universal-link${path}`;
+                    
+                    // Thử mở App
+                    window.location.href = universalLink;
+                    
+                    // Fallback sau 800ms (thời gian đủ ngắn để không nhảy web nếu có app)
+                    setTimeout(() => {
+                        // Nếu không có app, chuyển sang web
+                        window.location.href = YOUR_SHOPEE_AFFILIATE_URL;
+                    }, 800);
+                    
+                    console.log('[iOS] Đã kích hoạt Universal Link');
+                    return;
+                }
 
-                // Bước 1: Dùng Universal Link để kích hoạt app
-                window.location.href = SHOPEE_UNIVERSAL_LINK;
-
-                // Bước 2: Nếu sau 2 giây vẫn còn ở browser (tức là không có app), chuyển sang web
-                setTimeout(function() {
-                    // Kiểm tra nếu thời gian trôi qua > 2 giây (người dùng vẫn ở browser)
-                    if (Date.now() - startTime > 2000) {
-                        window.location.href = FALLBACK_URL;
-                        console.log(`[Mobile] Không có app, chuyển sang web: ${FALLBACK_URL}`);
-                    }
-                }, 2000);
+                // Fallback cho các thiết bị khác
+                window.open(YOUR_SHOPEE_AFFILIATE_URL, '_blank');
             }
 
-            // Đảm bảo DOM đã sẵn sàng
+            // Gắn sự kiện click vào body
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', function() {
                     document.body.addEventListener('click', handleClick);
-                    document.body.style.cursor = 'pointer';
                 });
             } else {
                 document.body.addEventListener('click', handleClick);
-                document.body.style.cursor = 'pointer';
             }
+            
+            document.body.style.cursor = 'pointer';
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
         })();
     </script>
 
     <!-- 
         =============================================
-        GIAO DIỆN LANDING PAGE (CHUYÊN NGHIỆP)
+        GIAO DIỆN LANDING PAGE (GIỮ NGUYÊN)
         =============================================
     -->
     <div class="max-w-6xl mx-auto px-4 py-8 md:py-16">
@@ -128,7 +140,7 @@
                     <i class="fas fa-check-circle text-green-500 mr-2"></i> Chiến lược Affiliate Shopee 0đ vốn
                 </p>
                 
-                <!-- NÚT GIẢ (Cũng sẽ mở link Affiliate khi click) -->
+                <!-- NÚT GIẢ -->
                 <div class="flex flex-wrap gap-4">
                     <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-200 text-lg transition-all transform hover:scale-105">
                         <i class="fas fa-download mr-2"></i> Nhận Tài Liệu Ngay
@@ -229,14 +241,5 @@
             </p>
         </div>
     </div>
-
-    <!-- Script nhỏ để ngăn chặn việc highlight text khi click chuột (tăng trải nghiệm "click anywhere") -->
-    <script>
-        (function preventSelection() {
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
-        })();
-    </script>
-
 </body>
-</html>
+                                </html>
