@@ -3,206 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>🎁 Tài Liệu Độc Quyền | Marketing 2026</title>
+    <title>🎁 Ưu Đãi Độc Quyền | Mở App Shopee Ngay</title>
     
-    <!-- Thư viện eiab giúp phát hiện và "thoát" khỏi trình duyệt in-app -->
-    <script type="importmap">
-      {
-        "imports": {
-          "eiab": "https://esm.sh/eiab@0.1.2"
-        }
-      }
-    </script>
+    <!-- Meta tags hỗ trợ mở app (Facebook App Links) -->
+    <meta property="al:android:url" content="shopee://">
+    <meta property="al:android:package" content="com.shopee.vn">
+    <meta property="al:android:app_name" content="Shopee">
+    <meta property="al:ios:url" content="shopee://">
+    <meta property="al:ios:app_store_id" content="959840327">
+    <meta property="al:ios:app_name" content="Shopee">
+    <meta property="al:web:should_fallback" content="false">
     
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body { cursor: pointer !important; }
-        .hover-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); transition: all 0.3s ease; }
-        .btn-hover:hover { background-color: #2563eb !important; }
+        body {
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .btn-shopee {
+            background: linear-gradient(135deg, #ee4d2d 0%, #d43f1f 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(238, 77, 45, 0.3);
+        }
+        .btn-shopee:hover {
+            transform: scale(1.03);
+            box-shadow: 0 15px 25px rgba(238, 77, 45, 0.4);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(238, 77, 45, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(238, 77, 45, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(238, 77, 45, 0); }
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        /* Ẩn con trỏ text khi hover vào nút */
+        button, a, [onclick] {
+            cursor: pointer;
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-sans antialiased">
+<body class="bg-gradient-to-br from-orange-50 via-white to-orange-100 font-sans antialiased min-h-screen flex items-center justify-center p-4">
 
-    <script type="module">
+    <script>
         // ########################################
         // ####### CẤU HÌNH LINK CỦA BẠN #########
         // ########################################
-        // Thay link affiliate shopee của bạn vào đây
+        // THAY LINK AFFILIATE SHOPEE CỦA BẠN VÀO ĐÂY
         const YOUR_SHOPEE_AFFILIATE_URL = "https://shopee.vn/flash_sale?deep_and_deferred=1&utm_source=landingpage&utm_medium=clickanywhere";
         // ########################################
 
-        import { attemptEscape, isInAppBrowser } from 'eiab';
+        // Hàm mở Shopee (ưu tiên app, fallback web)
+        function openShopee() {
+            // Sử dụng window.location để mở link. Trên mobile, nếu app được cài đặt và hỗ trợ Universal Link / App Link,
+            // nó sẽ mở thẳng app. Nếu không, nó sẽ mở web.
+            window.location.href = YOUR_SHOPEE_AFFILIATE_URL;
+            
+            // Ghi log để kiểm tra (có thể xóa khi deploy)
+            console.log('[Click] Đang chuyển hướng đến:', YOUR_SHOPEE_AFFILIATE_URL);
+        }
 
+        // Gắn sự kiện click cho toàn bộ body (Click Anywhere)
         (function() {
-            // Hàm xử lý Click Anywhere + Mở App Shopee
-            function handleClick(event) {
-                // 1. Kiểm tra xem có đang ở trong Facebook WebView không
-                if (isInAppBrowser()) {
-                    console.log('[Facebook WebView] Phát hiện trình duyệt in-app, đang kích hoạt escape...');
-                    // 2. Dùng eiab để tạo URL thoát ra trình duyệt gốc (Chrome/Safari)
-                    //    Thư viện sẽ tự động xử lý việc chuyển hướng cho cả iOS và Android.
-                    attemptEscape(YOUR_SHOPEE_AFFILIATE_URL);
-                    return; // Dừng lại, không làm gì thêm
-                }
-
-                // 3. Nếu không phải Facebook WebView (đang ở Chrome/Safari), mở link bình thường
-                console.log('[Normal Browser] Đang mở link...');
-                window.location.href = YOUR_SHOPEE_AFFILIATE_URL;
-            }
-
-            // Gắn sự kiện click vào body
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', function() {
-                    document.body.addEventListener('click', handleClick);
+                    document.body.addEventListener('click', openShopee);
                 });
             } else {
-                document.body.addEventListener('click', handleClick);
+                document.body.addEventListener('click', openShopee);
             }
-
-            document.body.style.cursor = 'pointer';
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
         })();
     </script>
 
-    <!-- 
-        =============================================
-        GIAO DIỆN LANDING PAGE (CHUYÊN NGHIỆP)
-        =============================================
-    -->
-    <div class="max-w-6xl mx-auto px-4 py-8 md:py-16">
-        
-        <!-- Header / Logo -->
-        <div class="flex justify-between items-center mb-12 border-b pb-6 border-gray-200">
-            <div class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">M</div>
-                <span class="font-bold text-2xl text-gray-800">Marketing<span class="text-blue-600">Hub</span></span>
+    <!-- Main Content -->
+    <div class="max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-orange-100">
+        <!-- Header Image / Banner -->
+        <div class="relative bg-gradient-to-r from-orange-500 to-red-500 h-40 md:h-48">
+            <div class="absolute inset-0 bg-black opacity-20"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div class="flex items-center gap-2 mb-1">
+                    <i class="fab fa-shopee text-3xl"></i>
+                    <span class="text-2xl font-bold tracking-tight">Shopee Mall</span>
+                </div>
+                <p class="text-orange-100 text-sm md:text-base">Flash Sale Độc Quyền • Kết thúc trong 24h</p>
             </div>
-            <div class="text-sm font-medium text-gray-500 hidden md:block">
-                <i class="far fa-calendar-alt mr-2"></i>Flash Sale: 16.04 - 20.04.2026
+            <!-- Badge -->
+            <div class="absolute top-4 right-4 bg-yellow-400 text-gray-900 font-bold py-1 px-3 rounded-full text-sm shadow-lg">
+                <i class="fas fa-bolt mr-1"></i> HOT
             </div>
         </div>
 
-        <!-- Hero Section -->
-        <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
-            <div>
-                <div class="inline-block px-4 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-4 tracking-wide">
-                    <i class="fas fa-gift mr-2"></i>CHỈ CÓ TRONG HÔM NAY
+        <!-- Content -->
+        <div class="p-6 md:p-8">
+            <!-- Tiêu đề chính -->
+            <div class="text-center mb-6">
+                <div class="inline-block bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full mb-2">
+                    CHỈ CÒN 100 SUẤT
                 </div>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-                    Bộ Tài Liệu <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Content AI 2026</span> <br>
-                    Miễn Phí Hoàn Toàn
+                <h1 class="text-2xl md:text-3xl font-extrabold text-gray-800 leading-tight">
+                    Nhận Ngay Voucher <br class="hidden md:block">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">Giảm Đến 50%</span>
                 </h1>
-                <p class="text-lg text-gray-600 mb-8 leading-relaxed">
-                    <i class="fas fa-check-circle text-green-500 mr-2"></i> 50+ Prompt ChatGPT bán hàng đỉnh cao<br>
-                    <i class="fas fa-check-circle text-green-500 mr-2"></i> Mẫu Video Capcut Viral (FULL HD)<br>
-                    <i class="fas fa-check-circle text-green-500 mr-2"></i> Chiến lược Affiliate Shopee 0đ vốn
-                </p>
-                
-                <!-- NÚT GIẢ (Cũng sẽ mở link Affiliate khi click) -->
-                <div class="flex flex-wrap gap-4">
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-200 text-lg transition-all transform hover:scale-105">
-                        <i class="fas fa-download mr-2"></i> Nhận Tài Liệu Ngay
-                    </button>
-                    <button class="bg-white border-2 border-gray-300 text-gray-700 font-bold py-4 px-8 rounded-xl hover:bg-gray-50 transition-all text-lg">
-                        <i class="fab fa-shopee mr-2 text-orange-500"></i> Xem Deal Shopee
-                    </button>
-                </div>
-                <p class="text-xs text-gray-400 mt-4">
-                    *Click vào bất kỳ đâu trên màn hình để xem ưu đãi độc quyền.
+                <p class="text-gray-500 mt-2">Trên Ứng Dụng Shopee</p>
+            </div>
+
+            <!-- Nút Mở App chính -->
+            <div class="mb-8">
+                <button onclick="openShopee()" class="btn-shopee w-full py-5 px-6 rounded-2xl text-xl font-bold flex items-center justify-center gap-3 pulse-animation">
+                    <i class="fab fa-shopee text-2xl"></i>
+                    Mở App Shopee Nhận Voucher
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <p class="text-xs text-gray-400 text-center mt-3">
+                    *Click vào nút hoặc bất kỳ đâu để mở ứng dụng
                 </p>
             </div>
-            <div class="relative">
-                <div class="bg-gradient-to-br from-blue-100 to-indigo-200 p-8 rounded-3xl shadow-2xl">
-                    <img src="https://placehold.co/600x400/3B82F6/FFFFFF?text=Ebook+Free+Cover" alt="Ebook Cover" class="rounded-lg shadow-md w-full h-auto border-4 border-white">
-                    <div class="absolute -bottom-5 -right-5 bg-white p-4 rounded-full shadow-xl">
-                        <i class="fas fa-star text-yellow-400 text-3xl"></i>
-                    </div>
+
+            <!-- Thông tin ưu đãi -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                    <div class="text-orange-500 text-2xl mb-1"><i class="fas fa-ticket-alt"></i></div>
+                    <div class="font-bold text-gray-700">50% OFF</div>
+                    <div class="text-xs text-gray-400">Đơn từ 0đ</div>
                 </div>
+                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                    <div class="text-orange-500 text-2xl mb-1"><i class="fas fa-shipping-fast"></i></div>
+                    <div class="font-bold text-gray-700">Freeship</div>
+                    <div class="text-xs text-gray-400">Đơn từ 99K</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-3 text-center">
+                    <div class="text-orange-500 text-2xl mb-1"><i class="fas fa-gift"></i></div>
+                    <div class="font-bold text-gray-700">Quà tặng</div>
+                    <div class="text-xs text-gray-400">Khi mở app</div>
+                </div>
+            </div>
+
+            <!-- Đánh giá từ người dùng -->
+            <div class="border-t border-gray-200 pt-5">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm font-semibold text-gray-600"><i class="fas fa-star text-yellow-400 mr-1"></i> 4.9 (2.3k đánh giá)</span>
+                    <span class="text-xs text-gray-400"><i class="far fa-clock mr-1"></i>Cập nhật hôm nay</span>
+                </div>
+                <div class="flex -space-x-2 overflow-hidden mb-3">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://placehold.co/100x100/FF6B6B/FFF?text=1" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://placehold.co/100x100/4ECDC4/FFF?text=2" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://placehold.co/100x100/FFB347/FFF?text=3" alt="">
+                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://placehold.co/100x100/7F7FD5/FFF?text=4" alt="">
+                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 ring-2 ring-white text-xs font-medium text-gray-500">+99</div>
+                </div>
+                <p class="text-sm text-gray-600 italic">
+                    <i class="fas fa-quote-left text-orange-300 mr-1"></i> 
+                    Tải app thấy voucher giảm 50% thật, mua được đồ giá tốt. Click vào link là mở app luôn, tiện quá!
+                </p>
+                <p class="text-xs text-gray-400 mt-2">- Minh Anh, Hà Nội</p>
+            </div>
+
+            <!-- Lưu ý nhỏ -->
+            <div class="mt-6 text-center text-xs text-gray-400">
+                <i class="fas fa-mobile-alt mr-1"></i> Dành riêng cho người dùng App Shopee
             </div>
         </div>
-
-        <!-- Trust Badges / Social Proof -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center py-8 border-y border-gray-200 my-8">
-            <div>
-                <div class="text-3xl font-bold text-gray-800">15K+</div>
-                <div class="text-gray-500 text-sm">Lượt tải tháng này</div>
-            </div>
-            <div>
-                <div class="text-3xl font-bold text-gray-800">4.98 <i class="fas fa-star text-yellow-400 text-xl"></i></div>
-                <div class="text-gray-500 text-sm">Đánh giá từ học viên</div>
-            </div>
-            <div>
-                <div class="text-3xl font-bold text-gray-800">100%</div>
-                <div class="text-gray-500 text-sm">Miễn phí vĩnh viễn</div>
-            </div>
-            <div>
-                <div class="text-3xl font-bold text-gray-800">24/7</div>
-                <div class="text-gray-500 text-sm">Hỗ trợ cài đặt</div>
-            </div>
-        </div>
-
-        <!-- Review Section (Cards) -->
-        <div class="mt-12">
-            <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Người dùng nói gì về tài liệu?</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Card 1 -->
-                <div class="bg-white p-6 rounded-2xl shadow-md hover-card border border-gray-100 transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://placehold.co/50x50/EEF2FF/4F46E5?text=A" class="w-12 h-12 rounded-full" alt="avatar">
-                        <div>
-                            <h4 class="font-bold text-gray-800">Minh Tâm</h4>
-                            <p class="text-sm text-gray-500">Seller Shopee</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 italic">
-                        <i class="fas fa-quote-left text-blue-200 mr-1"></i>
-                        Tưởng click nhầm quảng cáo mà hóa ra deal ngon thật. Tài liệu rất chi tiết, shop đã áp dụng tăng 30% đơn.
-                    </p>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-white p-6 rounded-2xl shadow-md hover-card border border-gray-100 transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://placehold.co/50x50/ECFDF5/059669?text=T" class="w-12 h-12 rounded-full" alt="avatar">
-                        <div>
-                            <h4 class="font-bold text-gray-800">Tuấn Anh</h4>
-                            <p class="text-sm text-gray-500">Affiliate Marketer</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 italic">
-                        <i class="fas fa-quote-left text-blue-200 mr-1"></i>
-                        Mấy cái prompt AI trong này xịn thật sự. Tiết kiệm 2h viết content mỗi ngày. Highly recommend!
-                    </p>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-white p-6 rounded-2xl shadow-md hover-card border border-gray-100 transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-4">
-                        <img src="https://placehold.co/50x50/FFF7ED/F97316?text=L" class="w-12 h-12 rounded-full" alt="avatar">
-                        <div>
-                            <h4 class="font-bold text-gray-800">Lan Hương</h4>
-                            <p class="text-sm text-gray-500">Sinh viên Marketing</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 italic">
-                        <i class="fas fa-quote-left text-blue-200 mr-1"></i>
-                        Rất hữu ích cho người mới bắt đầu. Click vào link thấy voucher giảm 50% mua sắm trên Shopee luôn.
-                    </p>
-                </div>
-            </div>
-        </div>
-
+        
         <!-- Footer -->
-        <div class="mt-16 text-center text-gray-400 text-sm border-t pt-8">
-            <p>© 2026 MarketingHub. Tất cả click chuột vào trang này đều hướng đến ưu đãi đối tác.</p>
-            <p class="mt-2">
-                <i class="fas fa-shield-alt mr-1"></i> Bảo mật thông tin | 
-                <i class="fas fa-link ml-2 mr-1"></i> Liên kết Shopee Mall chính hãng
-            </p>
+        <div class="bg-gray-50 px-6 py-3 border-t border-gray-200 text-center text-xs text-gray-500">
+            © 2026 MarketingHub • Liên kết với Shopee • Bảo mật tuyệt đối
         </div>
     </div>
+
+    <!-- Script bổ sung để ngăn chặn hành vi mặc định của thẻ a (nếu có) -->
+    <script>
+        (function() {
+            // Đảm bảo không có sự kiện nào khác can thiệp
+            window.onload = function() {
+                console.log('Trang đã sẵn sàng. Click bất kỳ đâu để mở Shopee.');
+            };
+        })();
+    </script>
 </body>
 </html>
